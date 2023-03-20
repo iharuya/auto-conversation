@@ -1,7 +1,6 @@
 import "dotenv/config"
-import { assertIsDefined } from "./utils"
+import { assertIsDefined, yesOrNo } from "./utils"
 import axios, { isAxiosError } from "axios"
-import * as readline from "readline"
 import dayjs from "dayjs"
 
 class Agent {
@@ -44,7 +43,7 @@ class Conversation {
       this.chatHistory.push({ name: agent.name, message: response })
       console.log(`${agent.name}: ${response}`)
 
-      continueConversation = await this.yesOrNo("続けますか？", true)
+      continueConversation = await yesOrNo("続けますか？", true)
       lastAgent = agent
     }
 
@@ -109,7 +108,7 @@ ${agentIntroductions}
   }
 
   private async whenChatGptError(prompt: string): Promise<string|void> {
-    const tryAgain = await this.yesOrNo("もう一度試しますか?（しない場合は会話を終了します）", true)
+    const tryAgain = await yesOrNo("もう一度試しますか?（しない場合は会話を終了します）", true)
     if (tryAgain) {
       return this.chatGpt(prompt)
     } else {
@@ -131,31 +130,6 @@ ${agentIntroductions}
       ...prevMessages,
       { role: "user", content: prompt }
     ]
-  }
-
-  private async getUserInput(question: string): Promise<string> {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    })
-    return new Promise((resolve) => {
-      rl.question(question, (answer) => {
-        rl.close()
-        resolve(answer)
-      })
-    })
-  }
-
-  private async yesOrNo(
-    title: string,
-    isDefaultYes: boolean = true
-  ): Promise<boolean> {
-    const optionText = isDefaultYes ? "Y/n" : "y/N"
-    const answer = await this.getUserInput(`${title} (${optionText}):`)
-    const isYes =
-      answer.toLowerCase() === "y" ||
-      (isDefaultYes && answer.toLowerCase() !== "n")
-    return isYes
   }
 
   private getRandomAgent(exclude?: Agent): Agent {
