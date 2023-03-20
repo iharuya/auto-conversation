@@ -1,4 +1,4 @@
-# 自動会話
+# auto-conversation
 
 ## 設計
 

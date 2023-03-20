@@ -109,6 +109,7 @@ class SpeechFactory {
     const speechFilePath = `speeches/${Date.now()}.wav`
     execSync(`ffmpeg ${filePaths} -filter_complex "${brackets}concat=n=${this.tmpWavNames.length}:v=0:a=1[out]" -map "[out]" ${speechFilePath} -nostats -loglevel "error"`)
     console.log(`${speechFilePath}に保存しました`)
+    execSync(`rm -f ${this.tmpWavNames.map((name) => `tmp/${name}`).join(" ")}`)
   }
 
   private generateIntro(): string {
